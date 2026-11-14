@@ -5,6 +5,16 @@ All notable changes to Xet Server will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- **`X-Xet-Refresh-Route` and xorb fetch URLs honor `X-Forwarded-Proto`.**
+  Behind a TLS-terminating reverse proxy, `xetd` and `xet-proxyd` saw
+  plain HTTP and advertised `http://` URLs, so `hf_xet` dialled port 80
+  on the proxy's hostname and hung before fetching any data. Both now
+  use the forwarded scheme, matching the existing Git LFS `lfsBaseURL`.
+
 ## [1.6.0] - 2026-11-13
 
 Large-repository cache-hydration release. This closes the remaining

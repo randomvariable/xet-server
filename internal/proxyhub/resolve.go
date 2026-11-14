@@ -136,5 +136,8 @@ func refreshRouteURL(r *http.Request, repoType, repoID, revision string) string 
 	if r.TLS != nil {
 		scheme = "https"
 	}
+	if fwd := r.Header.Get("X-Forwarded-Proto"); fwd == "https" || fwd == "http" {
+		scheme = fwd
+	}
 	return scheme + "://" + r.Host + "/api/" + repoType + "s/" + repoID + "/xet-read-token/" + revision
 }

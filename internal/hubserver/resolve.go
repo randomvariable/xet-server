@@ -97,11 +97,15 @@ func (s *Server) handleResolve(w http.ResponseWriter, r *http.Request, repoType,
 // mid-download. The /api/ namespace always carries a pluralized repo
 // type, so a dataset's refresh route must be /api/datasets/...;
 // hardcoding "models" would point a dataset's token refresh at a
-// nonexistent model of the same name.
+// nonexistent model of the same name. Honors X-Forwarded-Proto, like
+// lfsBaseURL, so a TLS reverse proxy yields an https route.
 func refreshRouteURL(r *http.Request, repoType, repoID, revision string) string {
 	scheme := "http"
 	if r.TLS != nil {
 		scheme = "https"
+	}
+	if fwd := r.Header.Get("X-Forwarded-Proto"); fwd == "https" || fwd == "http" {
+		scheme = fwd
 	}
 	return scheme + "://" + r.Host + "/api/" + repoType + "s/" + repoID + "/xet-read-token/" + revision
 }

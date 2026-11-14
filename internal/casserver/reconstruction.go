@@ -212,10 +212,16 @@ func (s *Server) xorbFetchURL(ctx context.Context, xorbHash merklehash.Hash, bas
 	return u, nil
 }
 
+// baseURLFromRequest is the scheme://host this request arrived on, for
+// xorb fetch URLs. Honors X-Forwarded-Proto so a TLS reverse proxy in
+// front of a plain-HTTP server yields https URLs.
 func baseURLFromRequest(r *http.Request) string {
 	scheme := "http"
 	if r.TLS != nil {
 		scheme = "https"
+	}
+	if fwd := r.Header.Get("X-Forwarded-Proto"); fwd == "https" || fwd == "http" {
+		scheme = fwd
 	}
 	return fmt.Sprintf("%s://%s", scheme, r.Host)
 }
